@@ -58,14 +58,64 @@ private static class SortTask extends RecursiveAction {
         if (high - low < THRESHOLD) {
             Arrays.sort(data, low, high + 1);
         } else {
-            int pivotIndex = lomutoPartition(data, low, high);
-            SortTask left = new SortTask(data, low, pivotIndex - 1);
-            SortTask right = new SortTask(data, pivotIndex + 1, high);
-            invokeAll(left, right);
+            //use 2 pivots for quicksort
+            int[] pivotIndices = dualPartition(data, low, high);
+            SortTask left = new SortTask(data, low, pivotIndices[0] - 1);
+            SortTask mid = new SortTask(data, pivotIndices[0] + 1, pivotIndices[1]-1);
+            SortTask right = new SortTask(data, pivotIndices[1] + 1, high);
+            invokeAll(left, mid, right);
         }
     }
+    private static int[] dualPartition(float[] data, int low, int high){
+        //save the values of low and high to be used later.
+        // p is the left pivot, and q
+        // is the right pivot.
+       int sl = low;
+       int sh = high;
+       float p = data[low], q = data[high];
+       //check if the leftmost data is greater than the rightmost data, and swap;
+       if (p > q){
+           swap(data, low, high);
+           p = data[low];
+           q = data[high];
+       }
+       // update low and high values to skip checking the pivot points in array comparisons
+       low = low + 1;
+       high = high -1;
+       //create another variable to store the low index
+       int m = low;
+       while (m <= high)
+        {
 
-    private static int lomutoPartition(float[] data, int low, int high) {
+            // Check if value is less than the leftmost pivot
+            if (data[m] < p)
+            {
+                swap(data, m, low);
+                low++;
+                m++;
+            }
+            // Check if the value is greater than the rightmost pivot
+            else if (data[m] >= q)
+            {
+                swap(data, high, m);
+                high -=1;
+            }
+            else{
+                m+=1;
+            }
+        }
+        low = low - 1;
+        high = high + 1;
+
+        // Place pivots in appropriate positions.
+        swap(data, sl, low);
+        swap(data, sh, high);
+
+        int[] dualPivots = {low, high};
+        return dualPivots;
+
+    }
+    /*private static int lomutoPartition(float[] data, int low, int high) {
         int pivotIndex = ThreadLocalRandom.current().nextInt(low, high + 1);
         float pivot = data[pivotIndex];
         swap(data, pivotIndex, high); // move pivot to the end
@@ -79,6 +129,8 @@ private static class SortTask extends RecursiveAction {
         swap(data, i, high); // move pivot to its final position
         return i;
     }
+
+     */
 
     private static void swap(float[] data, int i, int j) {
         float temp = data[i];
