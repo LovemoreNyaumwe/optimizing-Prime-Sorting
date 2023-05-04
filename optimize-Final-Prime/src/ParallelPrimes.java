@@ -6,43 +6,43 @@ import java.util.concurrent.Future;
 
 public class ParallelPrimes {
 
-    // replace this string with your team name
+    // Constant variable for the team name
     public static final String TEAM_NAME = "Three Amigos";
+    // Constant variable for the maximum value to check for primes
     public static final int MAX_VALUE = Integer.MAX_VALUE;
+     // Constant variable for the number of threads available to the program
     public static final int N_THREADS = Runtime.getRuntime().availableProcessors();
 
-    // Apply the sieve of Eratosthenes to find primes. This
-    // procedure partitions the sieving task up into several
-    // blocks, where each block isPrime stores boolean values
-    // associated with ROOT_MAX consecutive numbers. Note that
-    // partitioning the problem in this way is necessary because
-    // we cannot create a boolean array of size MAX_VALUE.
+    // Method to generate a list of optimized primes
     public static void optimizedPrimes(int[] primes) {
-        // compute small prime values
+        // Get a list of small primes
         int[] smallPrimes = Primes.getSmallPrimes();
+
+
         int nPrimes = primes.length;
 
-
-        // write small primes to primes
+        // Copy the small primes to the result array
         int count = 0;
         int minSize = Math.min(nPrimes, smallPrimes.length);
         for (; count < minSize; count++) {
             primes[count] = smallPrimes[count];
         }
 
-        // check if we've already filled primes, and return if so
+        // If the result array is already filled, return
         if (nPrimes == minSize) {
             return;
         }
 
+        // Create a thread pool to calculate primes in parallel
         ExecutorService pool = Executors.newFixedThreadPool(N_THREADS);
-        int i = 0;
         List<Future<boolean[]>> results = new ArrayList<>();
+
+        // Divide the search range into blocks and submit each block to the thread pool
         for (long curBlock = Primes.ROOT_MAX; curBlock < MAX_VALUE; curBlock += Primes.ROOT_MAX) {
-            results.add(pool.submit(new parallelPrimeTask(i, curBlock)));
-            i++;
+            results.add(pool.submit(new parallelPrimeTask(curBlock)));
         }
 
+        // Collect the prime numbers calculated by the tasks
         try {
             long curBlock = Primes.ROOT_MAX;
             for (Future<boolean[]> result : results) {
@@ -59,8 +59,7 @@ public class ParallelPrimes {
             e.printStackTrace();
         }
 
+        // Shut down the thread pool
         pool.shutdown();
-
     }
-
 }
