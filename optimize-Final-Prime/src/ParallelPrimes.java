@@ -35,7 +35,7 @@ public class ParallelPrimes {
 
         // Create a thread pool to calculate primes in parallel
         ExecutorService pool = Executors.newFixedThreadPool(N_THREADS);
-        List<Future<boolean[]>> results = new ArrayList<>();
+        List<Future<int[]>> results = new ArrayList<>();
 
         // Divide the search range into blocks and submit each block to the thread pool
         for (long curBlock = Primes.ROOT_MAX; curBlock < MAX_VALUE; curBlock += Primes.ROOT_MAX) {
@@ -44,16 +44,12 @@ public class ParallelPrimes {
 
         // Collect the prime numbers calculated by the tasks
         try {
-            long curBlock = Primes.ROOT_MAX;
-            for (Future<boolean[]> result : results) {
-                int index = 0;
-                for(boolean res : result.get()) {
-                    if(res && count < nPrimes) {
-                        primes[count++] = (int) curBlock + index;
+            for (Future<int[]> result : results) {
+                for(int res : result.get()) {
+                    if(count < nPrimes){
+                        primes[count++] = res;
                     }
-                    index++;
                 }
-                curBlock += Primes.ROOT_MAX;
             }
         } catch (Exception e) {
             e.printStackTrace();
