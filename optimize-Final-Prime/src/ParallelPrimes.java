@@ -38,7 +38,7 @@ public class ParallelPrimes {
         List<Future<int[]>> results = new ArrayList<>();
 
         // Divide the search range into blocks and submit each block to the thread pool
-        for (long curBlock = Primes.ROOT_MAX; curBlock < MAX_VALUE; curBlock += Primes.ROOT_MAX) {
+        for (long curBlock = Primes.ROOT_MAX; curBlock < MAX_VALUE; curBlock += Primes.ROOT_MAX*20) {
             results.add(pool.submit(new parallelPrimeTask(curBlock)));
         }
 

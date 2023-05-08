@@ -15,17 +15,17 @@ class parallelPrimeTask implements Callable<int[]> {
     @Override
     public int[] call() throws Exception {
         int numPrimes = 0;
-        boolean[] isPrime = new boolean[Primes.ROOT_MAX];
+        boolean[] isPrime = new boolean[Primes.ROOT_MAX*20];
         primeBlock(isPrime, Primes.getSmallPrimes(), (int) curBlock);
         for (boolean b : isPrime) {
-            if (b) {
+            if (!b) {
                 numPrimes++;
             }
         }
         int[] foundPrimes = new int[numPrimes];
         int j = 0;
         for (int i = 0; i < isPrime.length; i++) {
-            if (isPrime[i]) {
+            if (!isPrime[i]) {
                 foundPrimes[j] = (int) curBlock + i;
                 j++;
             }
@@ -35,7 +35,7 @@ class parallelPrimeTask implements Callable<int[]> {
 
     // Method to search for primes in a block of numbers using the Sieve of Eratosthenes algorithm
     private static void primeBlock(boolean[] isPrime, int[] smallPrimes, int start) {
-        Arrays.fill(isPrime, true);
+//        Arrays.fill(isPrime, true);
 
         // Mark the non-prime numbers in the block
         for (int p : smallPrimes) {
@@ -43,7 +43,7 @@ class parallelPrimeTask implements Callable<int[]> {
             i -= start;
 
             while (i < isPrime.length) {
-                isPrime[i] = false;
+                isPrime[i] = true;
                 i += p;
             }
         }
