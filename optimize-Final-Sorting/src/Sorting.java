@@ -5,7 +5,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Sorting {
     // replace with your 
-    public static final String TEAM_NAME = "baseline";
+    public static final String TEAM_NAME = "Three Amigos";
     
     /**
      * Sorts an array of doubles in increasing order. This method is a
