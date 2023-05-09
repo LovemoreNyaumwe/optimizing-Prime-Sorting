@@ -6,6 +6,8 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Sorting {
     // replace with your 
     public static final String TEAM_NAME = "Three Amigos";
+    // Constant variable for the number of threads available to the program
+    public static int N_THREADS = Runtime.getRuntime().availableProcessors();
     
     /**
      * Sorts an array of doubles in increasing order. This method is a
@@ -19,7 +21,7 @@ public class Sorting {
 
     /**
      * Sorts an array of doubles in increasing order. This method is a
-     * multi-threaded optimized sorting algorithm. For large arrays (e.g., arrays of size at least 1 million) it should be significantly faster than baselineSort.
+     * multithreaded optimized sorting algorithm. For large arrays (e.g., arrays of size at least 1 million) it should be significantly faster than baselineSort.
      *
      * @param data   the array of doubles to be sorted
      */
@@ -34,8 +36,11 @@ public class Sorting {
 // This method sorts a float array using parallel quicksort algorithm
 
 public static void parallelSort(float[] data) {
+    if (N_THREADS > 32) {
+        N_THREADS = 32;
+    }
     // Create a new ForkJoinPool
-    ForkJoinPool pool = new ForkJoinPool();
+    ForkJoinPool pool = new ForkJoinPool(N_THREADS);
     // Invoke the SortTask to sort the data array
     pool.invoke(new SortTask(data, 0, data.length - 1));
 }
